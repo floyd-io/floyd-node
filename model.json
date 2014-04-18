@@ -1,0 +1,10 @@
+{
+	"home": {
+  		"name": "diego",
+  		"devices": [
+      			{"id": "lamp_1", "status": "off"},
+      			{"id": "lamp_2", "status": "on"},
+      			{"id": "lamp_3", "onclick": "off"}
+    	]
+  	}
+ }
