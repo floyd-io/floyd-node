@@ -1,5 +1,9 @@
 var http = require('http');
+
 var RESOURCE_FILE = __dirname + '/model.json';
+
+//keep a reference to connections
+var sockets = [];
 
 responses = {
 
@@ -68,6 +72,7 @@ responses = {
 			fs.unwatchFile(RESOURCE_FILE, watchListener);
 			response.end();
 
+			sockets.splice(sockets.indexOf(request.socket), 1);
 			request.socket.destroy();
 		})
 		
@@ -77,6 +82,7 @@ responses = {
 			fs.unwatchFile(RESOURCE_FILE, watchListener);
 			response.end();
 
+			sockets.splice(sockets.indexOf(request.socket), 1);
 			request.socket.destroy();
 		});
 		
@@ -85,7 +91,7 @@ responses = {
   	}
 }
 
-http.createServer(function (request, response) {
+var server = http.createServer(function (request, response) {
   var func = responses[request.url];
   if (func !== undefined) {
     func(request, response);
@@ -95,6 +101,33 @@ http.createServer(function (request, response) {
     response.end("404, not found.");
   }
 }).listen(1337);
+
+
+
+server.on('connection', function (socket) {
+  //keep reference to incoming connections
+  sockets.push(socket);
+});
+
+if (process.platform === "win32") {
+    require("readline").createInterface({
+        input: process.stdin,
+        output: process.stdout
+    }).on("SIGINT", function () {
+        process.emit("SIGINT");
+    });
+}
+
+process.on("SIGINT", function () {
+	console.log("Gracefully shutting down server...");
+
+	for (var i = 0; i < sockets.length; i++) {
+		console.log('Terminating Socket #' + i);
+		sockets[i].destroy();
+	}
+
+	process.exit();
+});
 
 console.log('Server running at http://127.0.0.1:1337/');
 console.log('Serving File -> ' + RESOURCE_FILE);
