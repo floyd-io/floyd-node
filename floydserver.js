@@ -67,7 +67,7 @@ responses = {
 		request.socket.removeAllListeners('timeout'); 
 		request.socket.setTimeout(1000 * 60 * 1); 
 		request.socket.on('timeout', function() { 		
-			console.log('Timed Out. Disconnecting (' + reqId + ')');
+			console.log('Timed Out. Gracefully disconnecting client (' + reqId + ')');
 			
 			fs.unwatchFile(RESOURCE_FILE, watchListener);
 			response.end();
@@ -105,10 +105,11 @@ var server = http.createServer(function (request, response) {
 
 
 server.on('connection', function (socket) {
-  //keep reference to incoming connections
+  //keep a reference to incoming connections
   sockets.push(socket);
 });
 
+//emit a SIGINT when CTRL+C pressed in MSWin
 if (process.platform === "win32") {
     require("readline").createInterface({
         input: process.stdin,
@@ -119,7 +120,11 @@ if (process.platform === "win32") {
 }
 
 process.on("SIGINT", function () {
-	console.log("Gracefully shutting down server...");
+	console.log("Shutting down Server...");
+	
+	if (sockets.length) {
+		console.log("Dumping Connected Clients...");
+	}
 
 	for (var i = 0; i < sockets.length; i++) {
 		console.log('Terminating Socket #' + i);
