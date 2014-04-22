@@ -8,7 +8,7 @@ var sockets = [];
 
 responses = {
 	"/jsclient.html" : function(request, response) {
-		fs.readFile('jsclient.html',function (err, data){
+		fs.readFile('jsClient.html',function (err, data){
 			response.writeHead(200, {'Content-Type': 'text/html','Content-Length':data.length});
 			response.write(data);
 			response.end();
