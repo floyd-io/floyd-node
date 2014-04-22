@@ -1,4 +1,5 @@
 var http = require('http');
+var fs = require('fs');
 
 var RESOURCE_FILE = __dirname + '/model.json';
 
@@ -27,9 +28,8 @@ responses = {
   	},
 
   	"/part2.html" : function(request, response) {
-  		fs = require('fs');
-				
-		reqId = request.headers['x-forwarded-for'] || 
+  						
+		var reqId = request.headers['x-forwarded-for'] || 
 				request.connection.remoteAddress || 
 				request.socket.remoteAddress ||
 				request.connection.socket.remoteAddress;
@@ -47,7 +47,7 @@ responses = {
       	});
 		
 		//listener to handle the file changes
-		watchListener = function(curr, prev) {
+		var watchListener = function(curr, prev) {
 			if (curr.mtime - prev.mtime) {
 				console.log('File Changed. Sending Data. (' + reqId + ')');
 				fs.readFile(RESOURCE_FILE, function(err, data) {
