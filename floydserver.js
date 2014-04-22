@@ -7,7 +7,14 @@ var RESOURCE_FILE = __dirname + '/model.json';
 var sockets = [];
 
 responses = {
-
+	"/jsclient.html" : function(request, response) {
+		fs.readFile('jsclient.html',function (err, data){
+			response.writeHead(200, {'Content-Type': 'text/html','Content-Length':data.length});
+			response.write(data);
+			response.end();
+		});	
+	},
+	
   	"/part.html" : function(request, response) {
 		response.writeHead(200, 
 			//{"Content-Type": "text/plain"}
