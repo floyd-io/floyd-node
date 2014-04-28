@@ -49,8 +49,8 @@ responses = {
 		);
 
 		fs.readFile(RESOURCE_FILE, function(err, data) {
-      			if (err) throw err;      			
-      			response.write(data);
+      			if (err) throw err;      						
+      			response.write(data.toString().replace(/(\r\n|\n|\r)/gm,"") + "\n");
       	});
 		
 		//listener to handle the file changes
@@ -60,7 +60,7 @@ responses = {
 				fs.readFile(RESOURCE_FILE, function(err, data) {
 					if (err) throw err;
 					
-					response.write(data);
+					response.write(data.toString().replace(/(\r\n|\n|\r)/gm,"") + "\n");
 				});
 			}
 		};
